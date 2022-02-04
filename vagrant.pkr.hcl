@@ -1,3 +1,8 @@
+variable "cloud_token" {
+  type    = string
+  default = "${env("VAGRANT_CLOUD_TOKEN")}"
+}
+
 packer {
   required_plugins {
     vagrant = {
@@ -20,5 +25,11 @@ build {
   provisioner "shell" {
     script = "docker-remote/provision.sh"
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+  }
+
+  post-processor "vagrant-cloud" {
+    access_token = "${var.cloud_token}"
+    box_tag      = "bvez/docker-remote"
+    version      = "1.0"
   }
 }
